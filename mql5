@@ -1,0 +1,101 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                      EA Magic lines mt5          |
+//|                            https://www.forexroboteasy.com        |
+//|                                 Developed by Forex Robot Easy Team|
+//+------------------------------------------------------------------+
+
+// Define input parameters for adjusting the lines
+input color RedLineColor = clrRed;    // Color of the red line
+input color GreenLineColor = clrGreen;    // Color of the green line
+
+// Define global variables
+double previousHigh;    // Highest price of the previous day
+double previousLow;    // Lowest price of the previous day
+
+//+------------------------------------------------------------------+
+//| Expert initialization function                                   |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+    // Calculate previous day's high and low
+    CalculatePreviousDayHighLow();
+
+    // Mark the highest price with a red line
+    ObjectCreate('RedLine', OBJ_TREND, 0, 0, 0, 0, 0);
+    ObjectSet('RedLine', OBJPROP_COLOR, RedLineColor);
+    ObjectSet('RedLine', OBJPROP_PRICE1, previousHigh);
+    
+    // Mark the lowest price with a green line
+    ObjectCreate('GreenLine', OBJ_TREND, 0, 0, 0, 0, 0);
+    ObjectSet('GreenLine', OBJPROP_COLOR, GreenLineColor);
+    ObjectSet('GreenLine', OBJPROP_PRICE1, previousLow);
+    
+    return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Expert deinitialization function                                 |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+    // Remove the red and green lines from the chart
+    ObjectDelete('RedLine');
+    ObjectDelete('GreenLine');
+}
+
+//+------------------------------------------------------------------+
+//| Expert tick function                                             |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+    // Check if the price touches the red line
+    if (Bid <= previousHigh)
+    {
+        // Initiate a sell position
+        Sell();
+    }
+    
+    // Check if the price touches the green line
+    if (Ask >= previousLow)
+    {
+        // Open a buy position
+        Buy();
+    }
+}
+
+//+------------------------------------------------------------------+
+//| Function to calculate previous day's high and low                 |
+//+------------------------------------------------------------------+
+void CalculatePreviousDayHighLow()
+{
+    datetime previousDay = iTime(_Symbol, PERIOD_D1, 1);
+    int shift = iBarShift(_Symbol, PERIOD_D1, previousDay, false);
+    
+    previousHigh = iHigh(_Symbol, PERIOD_D1, shift);
+    previousLow = iLow(_Symbol, PERIOD_D1, shift);
+}
+
+//+------------------------------------------------------------------+
+//| Function to initiate a sell position                              |
+//+------------------------------------------------------------------+
+void Sell()
+{
+    // Place the sell order code here
+    // ...
+    
+    // Log the sell action
+    Print('Sell position initiated');
+}
+
+//+------------------------------------------------------------------+
+//| Function to open a buy position                                   |
+//+------------------------------------------------------------------+
+void Buy()
+{
+    // Place the buy order code here
+    // ...
+    
+    // Log the buy action
+    Print('Buy position opened');
+}
